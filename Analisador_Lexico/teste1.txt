@@ -1,0 +1,6 @@
+idade = 3;
+idade_ano_que_vem = idade+1;
+if(idade_ano_que_vem == 18)
+{
+	print();
+}

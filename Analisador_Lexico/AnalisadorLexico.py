@@ -18,11 +18,15 @@ grafo = [
           (32, "[r]", 33), (33, "[a-hj-z0-9_]", 11), (33, "[i]", 36), (36,"[a-mo-z0-9_]",11), (36, "[n]", 35), (35, "[a-su-z0-9_]", 11),
           (35, "[t]", 34), (34, "[a-z0-9_]", 11)
         ]
+
 delta = []
+N = 50
+M = 300
+
 def initDelta():
-    for i in range(0, 50):
+    for i in range(0, N):
         linha = []
-        for j in range(0, 300):
+        for j in range(0, M):
             linha.append(-1)
         delta.append(linha)
 
@@ -40,16 +44,6 @@ def buildDelta():
         u = aresta[2]
         conecta(v, expressaRegular, u)
         
-def classifica(lexema):
-    estadoAtual = 0
-    for simbolo in lexema:
-        estadoAtual = delta[estadoAtual][ord(simbolo)]
-        if estadoAtual == -1:
-            break;
-    if estadoAtual in estadosFinais:
-        return (estadosFinais[estadoAtual], lexema)        
-    return ("null", lexema)
-    
 def mySplit(arquivo):
     l = []
     for linha in arquivo:
@@ -88,10 +82,10 @@ def geraTokens(arquivo):
     return listaTokens
 
 buildDelta()
-n = int(input())
-for i in range(0, n):
-    s = input()
-    print(classifica(s))
+arq = open("teste1.txt", "r")
+arquivo = arq.readlines()
+print(geraTokens(arquivo))
+
 
 
 
