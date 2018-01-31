@@ -69,23 +69,24 @@ def geraTokens(arquivo):
             pilha.append(estadoAtual)
             estadoAtual = delta[estadoAtual][ord(simbolo)]
             indice+=1  
-        topo = len(pilha)-1
-        while not (estadoAtual in estadosFinais) and topo > -1:
-            estadoAtual = pilha[topo]
+        while not (estadoAtual in estadosFinais) and pilha:
+            estadoAtual = pilha.pop()
             lexema = lexema[0:len(lexema)-1]
-            topo -= 1
             indice -= 1
-        if topo == -1:
+        if not pilha:
             print("Erro")
             exit(0)
         listaTokens.append( (estadosFinais[estadoAtual], lexema) )
     return listaTokens
 
-buildDelta()
-arq = open("teste1.txt", "r")
-arquivo = arq.readlines()
-print(geraTokens(arquivo))
 
+def main():
+    buildDelta()
+    arq = open("teste1.txt", "r")
+    arquivo = arq.readlines()
+    print(geraTokens(arquivo))
 
-
+if __name__ == "__main__":
+    main()
+    
 
