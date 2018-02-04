@@ -19,6 +19,7 @@ grafo = [
           (35, "[t]", 34), (34, "[a-z0-9_]", 11)
         ]
 
+
 delta = []
 N = 50
 M = 300
@@ -82,7 +83,7 @@ def geraTokens(arquivo):
 
 def main():
     buildDelta()
-    arq = open("teste1.txt", "r")
+    arq = open("./Testes/teste1.txt", "r")
     arquivo = arq.readlines()
     print(geraTokens(arquivo))
 
