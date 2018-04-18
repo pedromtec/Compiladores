@@ -5,9 +5,10 @@ alfabeto = "&()+-0123456789;=ABCDEFGHIJKLMNOPQRSTUVWXYZ[]_abcdefghijklmnopqrstuv
 
 estadosFinais = {1:"(", 2:"-", 3: "--", 4:"+", 5:"++", 6:"NUM", 7:"NUM", 8:"NUM", 10: "ID", 11: "ID", 21:"=", 20: ";", 16: "[",
                  17: "]", 14: "{", 15: "}", 13:")", 18: "CONST", 19: "CONST", 22: "ID", 23: "ID", 24: "for", 25: "ID", 26: "if",
-                 27: "ID", 28: "ID", 29: "ID", 30: "ID", 31: "while", 32: "ID", 33: "ID", 36: "ID", 35: "ID", 34: "print", 37:"SPACE", 38: "=="}
+                 27: "ID", 28: "ID", 29: "ID", 30: "ID", 31: "while", 32: "ID", 33: "ID", 36: "ID", 35: "ID", 34: "print", 37:"SPACE", 38: "==",
+                 39:"INDENTACAO"}
 grafo = [
-          (0, "[' ''\n''\t''\r']", 37), (21,"[=]", 38), (0, "[=]", 21), (0, "[;]", 20), (0, "[[]", 16), (0, "[]]", 17), (0, "[{]", 14),
+          (0, "[ \t\r]", 37),(0, "[\n]", 39), (39, "[ ]", 39), (21,"[=]", 38), (0, "[=]", 21), (0, "[;]", 20), (0, "[[]", 16), (0, "[]]", 17), (0, "[{]", 14),
           (0, "[}]", 15), (0, "[(]", 1), (0, "[)]", 13), (0, "[-]", 2), (2, "[-]", 3), (0, "[+]", 4), (4, "[+]", 5), (0, "[0-9]", 6),
           (6, "[0-9]" , 6), (6, "[.]", 7), (7,"[0-9]", 8), (8, "[0-9]", 8), (0, "[.]", 9), (9, "[0-9]" , 8), (0, "[A-Z]", 18),
           (18, "[A-Z0-9_]", 19), (19, "[A-Z0-9_]", 19), (0, "[a-eg-hj-oq-vx-z]", 10), (10, "[a-z0-9_]", 11), (11, "[a-z0-9_]", 11),
@@ -46,7 +47,7 @@ def buildDelta():
         conecta(v, expressaRegular, u)
         
 def mySplit(arquivo):
-    l = []
+    l = ['\n']
     for linha in arquivo:
         for simb in linha:
             l.append(simb)
@@ -56,6 +57,7 @@ def geraTokens(arquivo):
     listaTokens = []
     indice = 0
     l = mySplit(arquivo)
+    pilha_indentacao = []
     while True:
         lexema = ""
         pilha = []
@@ -77,7 +79,33 @@ def geraTokens(arquivo):
         if not pilha:
             print("Erro")
             exit(0)
-        listaTokens.append( (estadosFinais[estadoAtual], lexema) )
+        if estadosFinais[estadoAtual] == "INDENTACAO":
+        	tam = len(lexema) - 1
+        	if not pilha_indentacao:
+        		if tam > 0:
+        			print("Erro de indentação")
+        			exit(0)
+        		pilha_indentacao.append(tam)
+
+        	topo = len(pilha_indentacao) - 1
+        	if pilha_indentacao[topo] == tam:
+        		continue
+        	if pilha_indentacao[topo] < tam:
+        		pilha_indentacao.append(tam)
+        		listaTokens.append(("begin", "BEGIN"))
+        	else:
+        		while pilha_indentacao and pilha_indentacao[topo] != tam:
+        			listaTokens.append(("end", "END"))
+        			topo-=1
+        			pilha_indentacao.pop()
+        		if not pilha_indentacao:
+        			print("Erro de indentação")
+        			exit(0)
+        else:
+        	listaTokens.append( (estadosFinais[estadoAtual], lexema) )
+    while len(pilha_indentacao) > 1:
+    	listaTokens.append(("end", "END"))
+    	pilha_indentacao.pop()
     return listaTokens
 
 
